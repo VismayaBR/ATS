@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "878796084156",
+    "project_id": "ats-database-cd6c8",
+    "storage_bucket": "ats-database-cd6c8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:878796084156:android:d427b4048fb10509f111b9",
+        "android_client_info": {
+          "package_name": "com.example.ats"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQyugXwWsS4CuHMqEE5Byl5QuQYtn4W40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
