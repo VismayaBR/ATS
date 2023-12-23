@@ -111,7 +111,7 @@ class _AddRentState extends State<AddRent> {
           'v_image': imageUrl,
           'rc': imageUrl1,
           'name': name.text,
-          'category': category.text,
+          'category': selectedCategory,
           'price': price.text,
           'desc':desc.text
 

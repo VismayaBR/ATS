@@ -28,8 +28,8 @@ class _ProHome1State extends State<ProHome1> {
   Future<dynamic> fetchDataFromFirebase() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('cabs')
-          .where('category',isEqualTo: 'Rent')
+          await FirebaseFirestore.instance.collection('rent')
+          .where('category',isEqualTo: 'Car')
           .get();
 
       setState(() {

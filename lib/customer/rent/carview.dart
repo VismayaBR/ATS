@@ -6,15 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CabView extends StatefulWidget {
+class CarView extends StatefulWidget {
   String id;
-  CabView({super.key, required this.id});
+  CarView({super.key, required this.id});
 
   @override
-  State<CabView> createState() => _CabViewState();
+  State<CarView> createState() => _CarViewState();
 }
 
-class _CabViewState extends State<CabView> {
+class _CarViewState extends State<CarView> {
   var _formKey = GlobalKey<FormState>();
 
   var pick = TextEditingController();
@@ -30,23 +30,18 @@ class _CabViewState extends State<CabView> {
     fetchDataFromFirebase();
   }
 
-  Future<void> fetchDataFromFirebase() async {
+   Future<void> fetchDataFromFirebase() async {
     try {
-       QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore.instance
-        .collection('rent')
-        .where('category', isEqualTo: 'car')
-        .where('id', isEqualTo: widget.id)
-        .get();
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await FirebaseFirestore.instance
+              .collection('rent')
+              .doc(widget.id)
+              .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        // Access the first document in the result (assuming there's only one)
-        carData = querySnapshot.docs[0].data() ?? {};
-        setState(() {
-          carData = carData;
-        });
-      } else {
-        // Document not found
-      }
+
+      setState(() {
+        carData = documentSnapshot.data() ?? {};
+      });
     } catch (e) {
       print('Error fetching data: $e');
       // Handle errors as needed
@@ -77,7 +72,7 @@ class _CabViewState extends State<CabView> {
                   height: 200,
                   width: 400,
                   color: Clr.clrlight,
-                  child: Image.network('https://outdooradvertising.company/campaign/resources/images/cab-advertising/cab-side-01.jpg'),
+                  child: Image.network(carData['v_image']),
                 ),
                 SizedBox(height: 20,),
                 Column(
@@ -100,7 +95,7 @@ class _CabViewState extends State<CabView> {
                           fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',
+                      carData['desc'],
                       style: GoogleFonts.poppins(fontSize: 15),
                     ),
                     SizedBox(
