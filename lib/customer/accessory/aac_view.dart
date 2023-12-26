@@ -13,12 +13,14 @@ class AccView extends StatefulWidget {
   String name;
   String price;
   String desc;
+  String img;
   AccView(
       {super.key,
       required String this.id,
       required this.name,
       required this.price,
-      required this.desc});
+      required this.desc, 
+      required this.img});
 
   @override
   State<AccView> createState() => _AccViewState();
@@ -90,7 +92,7 @@ class _AccViewState extends State<AccView> {
                     width: 400,
                     color: Clr.clrlight,
                     child: Image.network(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuNCrtnkEWK7E3hRXcfe9x2xeRIp1nr8dvZhkgQDJ8vR8utJsndHhbuhXrQzyCqumV60E&usqp=CAU'),
+                        widget.img),
                   ),
                   SizedBox(
                     height: 20,

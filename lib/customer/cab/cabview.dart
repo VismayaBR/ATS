@@ -281,7 +281,8 @@ SharedPreferences spref = await SharedPreferences.getInstance();
             'drop': drop.text ?? '',
             'cab_id': widget.id,
             'status':"0",
-            'cus_id':id
+            'cus_id':id,
+            'pro_id':cabData['pro_id']
 
           }).then((value) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {

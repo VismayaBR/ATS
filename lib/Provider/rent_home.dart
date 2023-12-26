@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProHome1 extends StatefulWidget {
   const ProHome1({super.key});
@@ -27,9 +28,12 @@ class _ProHome1State extends State<ProHome1> {
 
   Future<dynamic> fetchDataFromFirebase() async {
     try {
+       SharedPreferences spref = await SharedPreferences.getInstance();
+        var id = spref.getString('user_id');
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance.collection('rent')
-          .where('category',isEqualTo: 'Car')
+          .where('category',isEqualTo: 'Bike')
+          // .where('pro_id',isEqualTo: id)
           .get();
 
       setState(() {
@@ -77,13 +81,7 @@ class _ProHome1State extends State<ProHome1> {
                         }));
                       },
                       leading: Container(height: 80,width: 80,child: Image.network(cab!['v_image']),),
-                      title: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(cab!['name']),
-                        ),
-                      ),
+                      title: Text(cab!['name']),
                       subtitle: Text('Price per hour :${cab['price']}'),
                     ),
                   ),

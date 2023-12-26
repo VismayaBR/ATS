@@ -74,34 +74,33 @@ class _AvailableCabState extends State<AvailableCab> {
                                     fit: BoxFit.cover,
                                   ),
                                 ),
-                                Text(cab['name']),
-                                Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (ctx) {
-                                          return CabView( id:cabData[index].id);
-                                        }),
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 30,
-                                      width: double.infinity,
-                                      child: Center(
-                                        child: Text(
-                                          'Book',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                          ),
+                              
+                                Text(cab['name'],style: TextStyle(fontWeight: FontWeight.bold),),
+                                 Text('Price/hour : ${cab['price']}'),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (ctx) {
+                                        return CabView( id:cabData[index].id);
+                                      }),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    child: Center(
+                                      child: Text(
+                                        'Book',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
                                         ),
                                       ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Clr.clrdark,
-                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Clr.clrdark,
                                     ),
                                   ),
                                 ),

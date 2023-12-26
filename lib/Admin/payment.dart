@@ -138,7 +138,7 @@ class _PaymentState extends State<Payment> {
                 return Card(
                   color: Clr.clrlight,
                   child: Padding(
-                    padding: const EdgeInsets.all(18.0),
+                    padding: const EdgeInsets.only(top: 18,bottom: 18,),
                     child: GestureDetector(
                       onTap: () {
                         showDialog(
@@ -203,7 +203,7 @@ class _PaymentState extends State<Payment> {
                         );
                       },
                       child: ListTile(
-                        leading: CircleAvatar(backgroundColor: Colors.black),
+                        leading: CircleAvatar(backgroundImage: NetworkImage(accessory['accessories_data']['image']),),
                         title: Text(accessory['accessories_data']['name']),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -225,7 +225,9 @@ class _PaymentState extends State<Payment> {
                                     Text(
                                         '${accessory['accessories_data']['price'] ?? 0}'),
                                     Text('${accessory['quantity']}'),
-                                    Text('${accessory['address']}'),
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text('${accessory['address']}')),
                                   ],
                                 ),
                               ],

@@ -4,6 +4,7 @@ import 'package:ats/constants/font.dart';
 import 'package:ats/customer/accessory/aac_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Acc1 extends StatefulWidget {
   const Acc1({super.key});
@@ -62,31 +63,39 @@ class _Acc1State extends State<Acc1> {
                       itemBuilder: (context, index) {
                         var accessory = accessories[index].data();
                         return Card(
-                          color: Clr.clrlight,
+                           color: Clr.clrlight,
                           child: Padding(
                             padding: const EdgeInsets.all(18.0),
-                            child: ListTile(onTap: (){
+                           
+                          child: ListTile(
+                            onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                                return AccView(id:accessories[index].id,name:accessory['name'],price: accessory['price'],desc:accessory['desc']);
+                                return AccView(id:accessories[index].id,name:accessory['name'],price: accessory['price'],desc:accessory['desc'],img:accessory['image']);
                               }));
                             },
-                              leading: CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(accessory!['image']),
-                              ),
-                              title: Text(accessory!['name'] ?? 'Name'),
-                              subtitle:
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Rs. ${accessory!['price']}' ?? 'Price'),
-                                      Text('${accessory!['desc']}' ?? 'Price'),
-                                    ],
-                                  ),
-                              
-                            ),
+                            title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(accessory!['name'] ?? 'Name',style: GoogleFonts.poppins(fontSize: 17,fontWeight: FontWeight.bold),),
+                                   
+                                  ],
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 150,width: 150,
+                                      child: Image.network(accessory!['image'])),
+                                      SizedBox(height: 20,),
+                                    Text('Rs. ${accessory!['price']}' ?? 'Price',style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                   SizedBox(height: 10,),
+                                    Text('${accessory!['desc']}' ?? 'Price'),
+                                  ],
+                                ),
+                          )
                           ),
                         );
+                        
                       }),
                 ),
               ],

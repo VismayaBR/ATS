@@ -30,15 +30,12 @@ class _CabPaymentState extends State<CabPayment> {
           children: [
             Card(
               color: Clr.clrlight,
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(widget.img),
-                  ),
-                  title: Text(widget.cab),
-                  subtitle: Text('Price per hour : ${widget.price}'),
-                ),
+              child: ListTile(
+                // leading: CircleAvatar(
+                //   backgroundImage: NetworkImage(widget.img),
+                // ),
+                title: Text(widget.cab),
+                subtitle: Text('Price per hour : ${widget.price}'),
               ),
             ),
             Column(
@@ -55,7 +52,7 @@ class _CabPaymentState extends State<CabPayment> {
                         ),
                       ),
                       Text(
-                        'Rs. 500',
+                        'Rs. 250',
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                         ),
@@ -105,7 +102,7 @@ class _CabPaymentState extends State<CabPayment> {
                   color: Clr.clrlight,
                   child: Center(
                       child: Text(
-                    '1000',
+                    '250',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   )),
                 ),

@@ -85,13 +85,7 @@ class _ProHomeState extends State<ProHome> {
                         }));
                       },
                       leading: Container(height: 80,width: 80,child: Image.network(cab!['v_image']),),
-                      title: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(cab!['name']),
-                        ),
-                      ),
+                      title: Text(cab!['name']),
                       subtitle: Text('Seats :${cab['seat']}'),
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ats/Admin/Home.dart';
 import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,23 +49,23 @@ class _ProSignupState extends State<ProSignup> {
     }
   }
 
-  Future<void> uploadImage() async {
-    try {
-      if (_image != null) {
-        // Get a reference to the storage service
-        Reference storageReference =
-            FirebaseStorage.instance.ref().child('uploads/${_image!.name}');
+  // Future<void> uploadImage() async {
+  //   try {
+  //     if (_image != null) {
+  //       // Get a reference to the storage service
+  //       Reference storageReference =
+  //           FirebaseStorage.instance.ref().child('uploads/${_image!.name}');
 
-        // Upload the file to Firebase Storage
-        await storageReference.putFile(File(_image!.path));
+  //       // Upload the file to Firebase Storage
+  //       await storageReference.putFile(File(_image!.path));
 
-        // Get the download URL
-        imageUrl = await storageReference.getDownloadURL();
-      }
-    } catch (e) {
-      print('Error uploading image: $e');
-    }
-  }
+  //       // Get the download URL
+  //       imageUrl = await storageReference.getDownloadURL();
+  //     }
+  //   } catch (e) {
+  //     print('Error uploading image: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +265,7 @@ class _ProSignupState extends State<ProSignup> {
                       InkWell(
                           onTap: () async {
                             await pickImage();
-                            await uploadImage();
+                            // await uploadImage();
                           },
                           child: Text('Upload Proof'))
                     ],
@@ -275,26 +276,7 @@ class _ProSignupState extends State<ProSignup> {
                 ),
                 InkWell(
                   onTap: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await FirebaseFirestore.instance
-                          .collection('providers')
-                          .add({
-                        'name': name.text,
-                        'email': email.text,
-                        'mobile': mobile.text,
-                        'password': password.text,
-                        'category': selectedCategory,
-                        'district': district.text,
-                        'pincode': pincode.text,
-                        'status': '0',
-                        'image':imageUrl,
-                        'type':'provider'
-                      }).then((value) => Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return ProHome();
-                              })));
-                      // Navigate to the provider's home screen
-                    }
+                   uploadImage();
                   },
                   child: Container(
                     child: Center(
@@ -321,5 +303,46 @@ class _ProSignupState extends State<ProSignup> {
         ),
       ),
     );
+  }
+   Future<void> uploadImage() async {
+    try {
+      if (_image != null) {
+        // Get a reference to the storage service
+        Reference storageReference =
+            FirebaseStorage.instance.ref().child('uploads/${_image!.name}');
+
+        // Upload the file to Firebase Storage
+        await storageReference.putFile(File(_image!.path));
+
+        // Get the download URL
+        imageUrl = await storageReference.getDownloadURL();
+
+        // Ensure that imageUrl is set before adding data to Firestore
+        if (imageUrl != null) {
+          await FirebaseFirestore.instance.collection('providers').add({
+            'name': name.text,
+            'email': email.text,
+            'mobile': mobile.text,
+            'password': password.text,
+            'category': selectedCategory,
+            'district': district.text,
+            'pincode': pincode.text,
+            'status': '0',
+            'image': imageUrl,
+            'type': 'provider',
+          }).then((value) => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return HomePage();
+                }),
+              ));
+          // Navigate to the provider's home screen
+        } else {
+          print('Image URL is null. Image may not have been uploaded successfully.');
+        }
+      }
+    } catch (e) {
+      print('Error uploading image: $e');
+    }
   }
 }

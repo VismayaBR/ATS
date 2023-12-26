@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:ats/Provider/Pro_navbar.dart';
+import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -100,13 +102,16 @@ class _AddTechState extends State<AddTech> {
                     },
                     child:_image == null
                               ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.upload),
                                     Text('Upload Proof'),
                                   ],
                                 )
                               : Column(
-                                  children: [
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                  children:
+                                   [
                                     Text(_image!.name),
                                   ],
                                 ),
@@ -244,7 +249,7 @@ class _AddTechState extends State<AddTech> {
           'proof':imageUrl
         }).then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Mech();
+            return ProNavbar();
           }));
         });
       }

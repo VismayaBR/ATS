@@ -53,7 +53,8 @@ class _MechState extends State<Mech> {
               return Card(
                 color: Clr.clrlight,
                 child: Padding(
-                  padding: const EdgeInsets.all(18.0),
+                        padding: const EdgeInsets.only(top: 18,bottom: 18),
+
                   child: ListTile(
                     leading: CircleAvatar(backgroundColor: Colors.black,),
                     title: Text(mech!['name']),
