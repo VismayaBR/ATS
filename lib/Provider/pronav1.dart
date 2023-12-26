@@ -1,6 +1,7 @@
 import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/Provider/payment_history.dart';
+import 'package:ats/Provider/rent/rent%20request.dart';
 import 'package:ats/Provider/rent_home.dart';
 import 'package:ats/Provider/requests.dart';
 import 'package:ats/customer/accessory/accessory.dart';
@@ -95,7 +96,7 @@ class _ProNavbar1State extends State<ProNavbar1> with TickerProviderStateMixin {
         controller: _motionTabBarController,
         children: [
          ProHome1(),
-          Requests(),
+          Requests1(),
           Mech(),
          Payment_history(),
           ],

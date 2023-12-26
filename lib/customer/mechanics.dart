@@ -3,6 +3,7 @@ import 'package:ats/Provider/addtech.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Mechanics extends StatefulWidget {
   const Mechanics({super.key});
@@ -58,7 +59,9 @@ class _MechanicsState extends State<Mechanics> {
                     leading: CircleAvatar(backgroundColor: Colors.black,),
                     title: Text(mech!['name']),
                     subtitle: Text(mech['mobile']),
-                    trailing: IconButton(onPressed: (){},icon: Icon(Icons.phone),),
+                    trailing: IconButton(onPressed: (){
+                      launchUrl(Uri.parse('tel: ${mech['mobile']}'));
+                    },icon: Icon(Icons.phone),),
                   ),
                 ),
               );

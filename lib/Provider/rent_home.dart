@@ -1,6 +1,8 @@
 import 'package:ats/Provider/cab/addcab.dart';
 import 'package:ats/Provider/cab/addedcabvie.dart';
 import 'package:ats/Provider/cab/addrent.dart';
+import 'package:ats/Provider/rent/pro_bike_view.dart';
+import 'package:ats/Provider/rent/pro_car_view.dart';
 import 'package:ats/constants/font.dart';
 import 'package:ats/customer/CustomerView.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,7 +20,7 @@ class ProHome1 extends StatefulWidget {
 
 class _ProHome1State extends State<ProHome1> {
 
-  late List<DocumentSnapshot<Map<String, dynamic>>> cabData=[];
+  late List<DocumentSnapshot<Map<String, dynamic>>> rentData=[];
 
   @override
   void initState() {
@@ -30,17 +32,18 @@ class _ProHome1State extends State<ProHome1> {
     try {
        SharedPreferences spref = await SharedPreferences.getInstance();
         var id = spref.getString('user_id');
+        print(id);
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance.collection('rent')
-          .where('category',isEqualTo: 'Bike')
-          // .where('pro_id',isEqualTo: id)
+          // .where('category',isEqualTo: 'Bike')
+          .where('pro_id',isEqualTo: id)
           .get();
 
       setState(() {
-        cabData = querySnapshot.docs;
+        rentData = querySnapshot.docs;
         
       });
-            return cabData;
+            return rentData;
 
     } 
     
@@ -64,21 +67,29 @@ class _ProHome1State extends State<ProHome1> {
                   fontSize: 18,
                 ),),
           Expanded(
-            child:cabData == null
+            child:rentData == null
         ? Center(child: CircularProgressIndicator()) // Loading indicator
         :ListView.builder(
-             itemCount: cabData.length,
+             itemCount: rentData.length,
             itemBuilder: (context, index) {
-              var cab = cabData[index].data();
+              var cab = rentData[index].data();
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
                     color: Clr.clrlight,
                     child: ListTile(
                       onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return CabRequestView1(id: cabData[index].id);
+                        if(cab['category']=='Car'){
+                           Navigator.push(context, MaterialPageRoute(builder: (context){
+                          return CarViewPro(id: rentData[index].id);
                         }));
+                        }
+                        if(cab['category']=='Bike'){
+                          Navigator.push(context, MaterialPageRoute(builder: (context){
+                          return BikeViewPro(id: rentData[index].id);
+                        }));
+                        }
+                       
                       },
                       leading: Container(height: 80,width: 80,child: Image.network(cab!['v_image']),),
                       title: Text(cab!['name']),

@@ -23,7 +23,7 @@ class _CarListState extends State<CarList> {
   Future<dynamic> fetchDataFromFirebase() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('rent').where('category',isEqualTo: 'car').get();
+          await FirebaseFirestore.instance.collection('rent').where('category',isEqualTo: 'Car').get();
 
       setState(() {
         cabData = querySnapshot.docs;

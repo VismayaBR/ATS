@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddRent extends StatefulWidget {
   const AddRent({super.key});
@@ -106,6 +107,8 @@ class _AddRentState extends State<AddRent> {
    Future<void> uploadDataToDatabase() async {
     try {
       if (_formKey.currentState!.validate()) {
+          SharedPreferences spref = await SharedPreferences.getInstance();
+        var id = spref.getString('user_id');
         await uploadImage();
         await FirebaseFirestore.instance.collection('rent').add({
           'v_image': imageUrl,
@@ -113,7 +116,8 @@ class _AddRentState extends State<AddRent> {
           'name': name.text,
           'category': selectedCategory,
           'price': price.text,
-          'desc':desc.text
+          'desc':desc.text,
+          'pro_id':id
 
         }).then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {

@@ -3,6 +3,7 @@ import 'package:ats/Provider/addtech.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Mech extends StatefulWidget {
   const Mech({super.key});
@@ -59,7 +60,9 @@ class _MechState extends State<Mech> {
                     leading: CircleAvatar(backgroundColor: Colors.black,),
                     title: Text(mech!['name']),
                     subtitle: Text(mech['mobile']),
-                    trailing: IconButton(onPressed: (){},icon: Icon(Icons.phone),),
+                    trailing: IconButton(onPressed: (){
+                      launchUrl(Uri.parse(mech['mobile']));
+                    },icon: Icon(Icons.phone),),
                   ),
                 ),
               );
