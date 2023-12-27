@@ -282,11 +282,12 @@ SharedPreferences spref = await SharedPreferences.getInstance();
             'cab_id': widget.id,
             'status':"0",
             'cus_id':id,
-            'pro_id':cabData['pro_id']
+            'pro_id':cabData['pro_id'],
+            'pay':cabData['price'],
 
           }).then((value) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CabPayment(cab:cabData['name'],price:cabData['price'],img:cabData['v_image']);
+              return CabPayment(cab:cabData['name'],price:cabData['price'],img:cabData['v_image'],);
             }));
           });
         } else {

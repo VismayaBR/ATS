@@ -55,7 +55,7 @@ class _CarViewState extends State<CarView> {
         if (selectedDate != null && selectedDate1 != null) {
           
           // Convert DateTime to formatted date string          String formattedDate =
-              '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+              String formattedDate = '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
               String formattedDate1 =
               '${selectedDate1.year}-${selectedDate1.month}-${selectedDate1.day}';
 
@@ -65,20 +65,26 @@ class _CarViewState extends State<CarView> {
           var id = spref.getString('user_id');
           await FirebaseFirestore.instance.collection('car_booking').add({
            
-            'pick': selectedDate?? '',
-            'drop': selectedDate1 ?? '',
+            'pick': formattedDate?? '',
+            'drop': formattedDate1 ?? '',
             'car_id': widget.id,
             'status': "0",
             'cus_id': id,
-            'pro_id': carData['pro_id']
+            'pro_id': carData['pro_id'],
+            'days':days.text,
+            
           }).then((value) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CabPayment(
+              return CarPayment(
                   cab: carData['name'],
                   price: carData['price'],
-                  img: carData['v_image']);
+                  img: carData['v_image'],
+                  days:days.text,
+                  );
             }));
+          // print('object');
           });
+          
         } else {
           print('Selected date or time is null');
         }
@@ -250,6 +256,7 @@ class _CarViewState extends State<CarView> {
                         height: 10,
                       ),
                       TextFormField(
+                        
                         controller: days,
                         decoration: InputDecoration(
                           // hintText: 'Email',

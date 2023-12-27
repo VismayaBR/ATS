@@ -68,6 +68,16 @@ class _BikeListState extends State<BikeList> {
                                     child:Image.network(bike!['v_image'],),
                                   ),
                                   Text(bike!['name']),
+                                  Text( bike['status'] == true
+                                      ? 'Available'
+                                      : 'Not available',
+                                  style: TextStyle(
+                                    color: bike['status'] == true
+                                        ? Color.fromARGB(255, 8, 171, 14)
+                                        : // Color for 'Not available'
+                                        Colors
+                                            .red, // Change this color as needed
+                                  ),),
                                   Padding(
                                     padding: const EdgeInsets.all(18.0),
                                     child: InkWell(

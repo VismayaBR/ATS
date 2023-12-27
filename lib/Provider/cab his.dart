@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Payment_history extends StatefulWidget {
-  const Payment_history({super.key});
+class CabPaymentHistory extends StatefulWidget {
+  const CabPaymentHistory({super.key});
 
   @override
-  State<Payment_history> createState() => _Payment_historyState();
+  State<CabPaymentHistory> createState() => _CabPaymentHistoryState();
 }
 
-class _Payment_historyState extends State<Payment_history> {
+class _CabPaymentHistoryState extends State<CabPaymentHistory> {
 
    @override
   void initState() {
@@ -29,7 +29,7 @@ class _Payment_historyState extends State<Payment_history> {
         var id = spref.getString('user_id');
         print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('car_booking')
+          await FirebaseFirestore.instance.collection('cab_booking')
           .where('pro_id',isEqualTo: id)
           .get();
 
@@ -68,7 +68,7 @@ class _Payment_historyState extends State<Payment_history> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Text(req!['cus_id']),
-                        Text(req!['car_id']),
+                        Text(req!['cab_id']),
                       ],
                     ),
                     subtitle: Column(
@@ -76,7 +76,7 @@ class _Payment_historyState extends State<Payment_history> {
                       children: [
                         Text('Advance amount is payed',style: TextStyle(color: Colors.green),),
                         Text(req['pick']),
-                         Text('${req['days']} Days For rent'),
+                        //  Text('${req['days']} Days For rent'),
                       ],
                     ),
                     

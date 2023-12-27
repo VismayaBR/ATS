@@ -1,33 +1,29 @@
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CabRequestView extends StatefulWidget {
+class BikeReqView extends StatefulWidget {
 
   String cus_id;
-  String cab_id;
-  String date;
-  String time;
-  String drop;
   String pick;
+  String drop;
+  String car_id;
 
-  CabRequestView({super.key, 
-  required this.cus_id,
-  required this.cab_id, 
-  required this.date, 
-  required this.time, 
+  BikeReqView({super.key, 
+  required this.cus_id, 
+  required this.pick, 
   required this.drop, 
-  required this.pick
+  required this.car_id
   });
 
   @override
-  State<CabRequestView> createState() => _CabRequestViewState();
+  State<BikeReqView> createState() => _BikeReqViewState();
 }
 
-class _CabRequestViewState extends State<CabRequestView> {
-  late Map<String, dynamic> cabData = {};
+class _BikeReqViewState extends State<BikeReqView> {
+
+  late Map<String, dynamic> bikeData = {};
   late Map<String, dynamic> cusData = {};
 
 
@@ -41,10 +37,10 @@ class _CabRequestViewState extends State<CabRequestView> {
   Future<void> fetchDataFromFirebase() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance.collection('cabs').doc(widget.cab_id).get();
+          await FirebaseFirestore.instance.collection('rent').doc(widget.car_id).get();
 
       setState(() {
-        cabData = documentSnapshot.data() ?? {};
+        bikeData = documentSnapshot.data() ?? {};
       });
     } catch (e) {
       print('Error fetching data: $e');
@@ -68,10 +64,9 @@ class _CabRequestViewState extends State<CabRequestView> {
 }
 
 
-
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(28.0),
         child: SingleChildScrollView(
@@ -93,14 +88,14 @@ class _CabRequestViewState extends State<CabRequestView> {
                   height: 200,
                   width: 400,
                   color: Clr.clrlight,
-                  child: Image.network(cabData['v_image']),
+                  child: Image.network(bikeData['v_image']),
                 ),
                 SizedBox(height: 20,),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      cabData['name'],
+                      bikeData['name'],
                       style: GoogleFonts.poppins(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
@@ -125,14 +120,14 @@ class _CabRequestViewState extends State<CabRequestView> {
                      Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'seat',
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        Text(
-                          cabData['seat'],
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
+                        // Text(
+                        //   'seat',
+                        //   style: GoogleFonts.poppins(fontSize: 15),
+                        // ),
+                        // Text(
+                        //   bikeData['seat'],
+                        //   style: GoogleFonts.poppins(fontSize: 15),
+                        // ),
                       ],
                     ),
                     SizedBox(
@@ -142,11 +137,11 @@ class _CabRequestViewState extends State<CabRequestView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Price per day',
+                          'Price per hour',
                           style: GoogleFonts.poppins(fontSize: 15),
                         ),
                         Text(
-                          cabData['price'],
+                          bikeData['price'],
                           style: GoogleFonts.poppins(fontSize: 15),
                         ),
                       ],
@@ -218,33 +213,9 @@ class _CabRequestViewState extends State<CabRequestView> {
                 ),
                                     SizedBox(height: 10,),
 
-                 Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Date',
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        Text(
-                          widget.date,
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                      ],
-                    ),
+                
                     SizedBox(height: 10,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Time',
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                        Text(
-                         widget.time,
-                          style: GoogleFonts.poppins(fontSize: 15),
-                        ),
-                      ],
-                    ),
+                   
                 SizedBox(height: 40,),
                 InkWell(
                   // onTap: (){

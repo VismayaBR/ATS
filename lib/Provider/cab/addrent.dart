@@ -117,7 +117,8 @@ class _AddRentState extends State<AddRent> {
           'category': selectedCategory,
           'price': price.text,
           'desc':desc.text,
-          'pro_id':id
+          'pro_id':id,
+          'status':true,
 
         }).then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {

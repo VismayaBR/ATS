@@ -11,6 +11,7 @@ class CarList extends StatefulWidget {
   @override
   State<CarList> createState() => _CarListState();
 }
+
 class _CarListState extends State<CarList> {
   late List<DocumentSnapshot<Map<String, dynamic>>> cabData = [];
 
@@ -23,7 +24,10 @@ class _CarListState extends State<CarList> {
   Future<dynamic> fetchDataFromFirebase() async {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('rent').where('category',isEqualTo: 'Car').get();
+          await FirebaseFirestore.instance
+              .collection('rent')
+              .where('category', isEqualTo: 'Car')
+              .get();
 
       setState(() {
         cabData = querySnapshot.docs;
@@ -38,18 +42,20 @@ class _CarListState extends State<CarList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column( 
+      body: Column(
         children: [
           Text(
             'Available Cars',
-            style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500),
+            style:
+                GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w500),
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: cabData.length, // Set the itemCount to the length of your data
+              itemCount: cabData
+                  .length, // Set the itemCount to the length of your data
               itemBuilder: (BuildContext context, int rowIndex) {
                 return Container(
-                    height: 800,
+                  height: 800,
                   // ... (other properties)
                   child: GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -57,14 +63,15 @@ class _CarListState extends State<CarList> {
                       crossAxisSpacing: 9,
                       mainAxisSpacing: 9,
                     ),
-                    itemCount: cabData.length, // Set the itemCount to the length of your data
+                    itemCount: cabData
+                        .length, // Set the itemCount to the length of your data
                     itemBuilder: (BuildContext context, int index) {
                       var cab = cabData[index].data();
                       return Padding(
                         padding: const EdgeInsets.all(18.0),
                         child: Container(
-                            color: Clr.clrlight,
-                              padding: const EdgeInsets.all(8),
+                          color: Clr.clrlight,
+                          padding: const EdgeInsets.all(8),
                           // ... (other properties)
                           child: Center(
                             child: Column(
@@ -76,33 +83,42 @@ class _CarListState extends State<CarList> {
                                   ),
                                 ),
                                 Text(cab['name']),
-                                Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (ctx) {
-                                          return CarView( id:cabData[index].id);
-                                        }),
-                                      );
-                                    },
-                                    child: Container(
-                                      height: 30,
-                                      width: double.infinity,
-                                      child: Center(
-                                        child: Text(
-                                          'Book',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                          ),
+                                Text(
+                                  cab['status'] == true
+                                      ? 'Available'
+                                      : 'Not available',
+                                  style: TextStyle(
+                                    color: cab['status'] == true
+                                        ? Color.fromARGB(255, 8, 171, 14)
+                                        : // Color for 'Not available'
+                                        Colors
+                                            .red, // Change this color as needed
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (ctx) {
+                                        return CarView(id: cabData[index].id);
+                                      }),
+                                    );
+                                  },
+                                  child: Container(
+                                    height: 30,
+                                    width: double.infinity,
+                                    child: Center(
+                                      child: Text(
+                                        'Book',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
                                         ),
                                       ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        color: Clr.clrdark,
-                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: Clr.clrdark,
                                     ),
                                   ),
                                 ),

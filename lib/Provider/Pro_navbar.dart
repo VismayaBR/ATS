@@ -1,7 +1,9 @@
 import 'package:ats/Login.dart';
 import 'package:ats/Provider/ProviderHome.dart';
+import 'package:ats/Provider/cab%20his.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/Provider/payment_history.dart';
+import 'package:ats/Provider/payment_tab.dart';
 import 'package:ats/Provider/requests.dart';
 import 'package:ats/customer/accessory/accessory.dart';
 import 'package:ats/customer/cab/available-cab.dart';
@@ -107,7 +109,7 @@ class _ProNavbarState extends State<ProNavbar> with TickerProviderStateMixin {
          ProHome(),
           Requests(),
           Mech(),
-         Payment_history(),
+         CabPaymentHistory(),
           ],
       ),
     );

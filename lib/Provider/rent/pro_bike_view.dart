@@ -15,6 +15,7 @@ class BikeViewPro extends StatefulWidget {
 }
 
 class _BikeViewProState extends State<BikeViewPro> {
+   late bool isAvailable; 
   var _formKey = GlobalKey<FormState>();
 
   var pick = TextEditingController();
@@ -28,6 +29,19 @@ class _BikeViewProState extends State<BikeViewPro> {
   void initState() {
     super.initState();
     fetchDataFromFirebase();
+  }
+
+ Future<void> updateAvailabilityStatus(bool newStatus) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('rent')
+          .doc(widget.id)
+          .update({'status': newStatus});
+      print('Status updated successfully');
+    } catch (e) {
+      print('Error updating status: $e');
+      // Handle errors as needed
+    }
   }
 
    Future<void> fetchDataFromFirebase() async {
@@ -83,11 +97,31 @@ class _BikeViewProState extends State<BikeViewPro> {
                       style: GoogleFonts.poppins(
                           fontSize: 20, fontWeight: FontWeight.bold),
                     ),
-                    Text(
-                      'Available',
-                      style: GoogleFonts.poppins(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+                    Row(
+                    children: [
+                      Text('Available:',
+                          style: GoogleFonts.poppins(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Transform.scale(
+                        scale: 0.8, // Adjust the scaling factor as needed
+                        child: Switch(
+                          value: isAvailable,
+                          onChanged: (value) async {
+                            setState(() {
+                              isAvailable = value;
+                            });
+                            await updateAvailabilityStatus(value);
+                          },
+                          activeTrackColor: Colors
+                              .green, // Change the color of the track when switch is ON
+                          activeColor: Colors
+                              .white, // Change the color of the thumb when switch is ON
+                          inactiveThumbColor: const Color.fromARGB(255, 255, 255, 255), // Change the color of the thumb when switch is OFF
+                          inactiveTrackColor: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                     SizedBox(height: 20,),
                     Text(
                       'Description',

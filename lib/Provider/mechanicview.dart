@@ -61,7 +61,7 @@ class _MechState extends State<Mech> {
                     title: Text(mech!['name']),
                     subtitle: Text(mech['mobile']),
                     trailing: IconButton(onPressed: (){
-                      launchUrl(Uri.parse(mech['mobile']));
+                      launchUrl(Uri.parse('tel:${mech['mobile']}'));
                     },icon: Icon(Icons.phone),),
                   ),
                 ),

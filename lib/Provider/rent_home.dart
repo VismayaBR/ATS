@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProHome1 extends StatefulWidget {
   const ProHome1({super.key});
@@ -61,7 +62,9 @@ class _ProHome1State extends State<ProHome1> {
       body: Column(
 
         children: [
-          SizedBox(height: 50,),
+          
+         
+          SizedBox(height: 20,),
           Text('Added Vehicles', style: GoogleFonts.poppins(
                   color: Clr.clrdark,
                   fontSize: 18,
@@ -93,7 +96,13 @@ class _ProHome1State extends State<ProHome1> {
                       },
                       leading: Container(height: 80,width: 80,child: Image.network(cab!['v_image']),),
                       title: Text(cab!['name']),
-                      subtitle: Text('Price per hour :${cab['price']}'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Price per hour :${cab['price']}'),
+                          
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -102,10 +111,10 @@ class _ProHome1State extends State<ProHome1> {
         ],
       ),
     floatingActionButton: FloatingActionButton(onPressed: (){
-      Navigator.push(context, MaterialPageRoute(builder: (ctx){
-        return AddRent();
-      }));
-    },child: Icon(Icons.add,color: Clr.clrlight,),backgroundColor: Clr.clrdark,),
+     Navigator.push(context, MaterialPageRoute(builder: (ctx){
+       return AddRent();
+     }));
+            },child: Icon(Icons.add,color: Clr.clrlight,),backgroundColor: Clr.clrdark,),
     );
     
   }

@@ -1,6 +1,7 @@
 import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/Provider/payment_history.dart';
+import 'package:ats/Provider/payment_tab.dart';
 import 'package:ats/Provider/rent/rent%20request.dart';
 import 'package:ats/Provider/rent_home.dart';
 import 'package:ats/Provider/requests.dart';
@@ -8,11 +9,13 @@ import 'package:ats/customer/accessory/accessory.dart';
 import 'package:ats/customer/cab/available-cab.dart';
 import 'package:ats/customer/mechanics.dart';
 import 'package:ats/customer/rent/rentaltab.dart';
+import 'package:ats/Provider/rent/req_tab.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_tab_bar_v2/motion-badge.widget.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
 import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProNavbar1 extends StatefulWidget {
   const ProNavbar1({Key? key,}) : super(key: key);
@@ -54,7 +57,18 @@ class _ProNavbar1State extends State<ProNavbar1> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(widget.title!),
+       actions: [
+       Padding(
+         padding: const EdgeInsets.all(8.0),
+         child: InkWell(
+          onTap: (){
+            launchUrl(Uri.parse('tel:0496123456'));
+          },
+           child: SizedBox(
+             child: Image.asset('assets/cs.jpg')),
+         ),
+       ),
+       ],
       ),
       bottomNavigationBar: MotionTabBar(
         controller:
@@ -96,9 +110,9 @@ class _ProNavbar1State extends State<ProNavbar1> with TickerProviderStateMixin {
         controller: _motionTabBarController,
         children: [
          ProHome1(),
-          Requests1(),
+          RentalVehicle1(),
           Mech(),
-         Payment_history(),
+         RentalVehicleTab(),
           ],
       ),
     );

@@ -1,20 +1,19 @@
-import 'package:ats/Provider/rent/carrequestview.dart';
+import 'package:ats/Provider/rent/carreqview.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:ats/constants/font.dart';
 
-class Requests1 extends StatefulWidget {
-  const Requests1({Key? key}) : super(key: key);
+class Requests2 extends StatefulWidget {
+  const Requests2({Key? key}) : super(key: key);
 
   @override
-  State<Requests1> createState() => _Requests1State();
+  State<Requests2> createState() => _Requests2State();
 }
 
-class _Requests1State extends State<Requests1> {
+class _Requests2State extends State<Requests2> {
   List<DocumentSnapshot<Map<String, dynamic>>> reqData = [];
 
   @override
@@ -30,7 +29,7 @@ class _Requests1State extends State<Requests1> {
       print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance
-              .collection('bike_booking')
+              .collection('car_booking')
               .where('pro_id', isEqualTo: id)
               .get();
 
@@ -73,7 +72,7 @@ class RequestList extends StatelessWidget {
           child: ListView.builder(
             itemCount: reqData.length,
             itemBuilder: (context, index) {
-              return InkWell(child: RequestCard(document: reqData[index]));
+              return RequestCard(document: reqData[index]);
             },
           ),
         ),
@@ -99,9 +98,9 @@ class RequestCard extends StatelessWidget {
       child: Card(
         color: Clr.clrlight,
         child: ListTile(
-          onTap: () {
+         onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-              return BikeReqView(
+              return CarReqView(
                   cus_id: req['cus_id'],
                   pick: req['pick'],
                   drop: req['drop'],

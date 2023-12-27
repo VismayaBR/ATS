@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Payment_history extends StatefulWidget {
-  const Payment_history({super.key});
+class Payment_history1 extends StatefulWidget {
+  const Payment_history1({super.key});
 
   @override
-  State<Payment_history> createState() => _Payment_historyState();
+  State<Payment_history1> createState() => _Payment_history1State();
 }
 
-class _Payment_historyState extends State<Payment_history> {
+class _Payment_history1State extends State<Payment_history1> {
 
    @override
   void initState() {
@@ -29,7 +29,7 @@ class _Payment_historyState extends State<Payment_history> {
         var id = spref.getString('user_id');
         print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('car_booking')
+          await FirebaseFirestore.instance.collection('bike_booking')
           .where('pro_id',isEqualTo: id)
           .get();
 

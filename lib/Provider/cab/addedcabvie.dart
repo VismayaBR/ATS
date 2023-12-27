@@ -147,7 +147,7 @@ class _CabRequestView1State extends State<CabRequestView1> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Price per hour',
+                        'Price per day',
                         style: GoogleFonts.poppins(fontSize: 15),
                       ),
                       Text(

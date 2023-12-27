@@ -1,5 +1,6 @@
 import 'package:ats/constants/font.dart';
 import 'package:ats/customer/cab/cabpayment.dart';
+import 'package:ats/customer/rent/bikepayment.dart';
 import 'package:ats/customer/rent/carpayment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class _BikeViewState extends State<BikeView> {
 
   var pick = TextEditingController();
   var drop = TextEditingController();
+  var days = TextEditingController();
 
   late Map<String, dynamic> bikeData = {};
   late DateTime selectedDate = DateTime.now();
@@ -50,13 +52,15 @@ late Map<String, dynamic> bikesData = {};
           'car_id': widget.id,
           'status': "0",
           'cus_id': id,
-          'pro_id': bikeData['pro_id']
+          'pro_id': bikeData['pro_id'],
+          'days':days.text
         }).then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return CabPayment(
+            return BikePayment(
               cab: bikeData['name'],
               price: bikeData['price'],
               img: bikeData['v_image'],
+              days:days.text
             );
           }));
         });
@@ -243,6 +247,7 @@ late Map<String, dynamic> bikesData = {};
                         height: 10,
                       ),
                       TextFormField(
+                        controller: days,
                         decoration: InputDecoration(
                           // hintText: 'Email',
                           filled: true,

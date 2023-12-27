@@ -274,7 +274,7 @@ class _AddCabState extends State<AddCab> {
                   controller: price,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter price per hour';
+                      return 'Please enter price per day';
                     }
             
                     return null;

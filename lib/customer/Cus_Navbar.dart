@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_tab_bar_v2/motion-tab-bar.dart';
 import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key,}) : super(key: key);
@@ -46,7 +47,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // title: Text(widget.title!),
+        actions: [
+       Padding(
+         padding: const EdgeInsets.all(8.0),
+         child: InkWell(
+          onTap: (){
+            launchUrl(Uri.parse('tel:0496123456'));
+          },
+           child: SizedBox(
+             child: Image.asset('assets/cs.jpg')),
+         ),
+       ),
+       ],
       ),
       bottomNavigationBar: MotionTabBar(
         controller:

@@ -2,18 +2,18 @@ import 'package:ats/constants/font.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class CarPayment extends StatefulWidget {
+class BikePayment extends StatefulWidget {
   String cab;
   String price;
   String img;
   String days;
-  CarPayment({super.key, required this.cab, required this.price, required this.img, required this.days});
+  BikePayment({super.key, required this.cab, required this.price, required this.img, required this.days});
 
   @override
-  State<CarPayment> createState() => _CarPaymentState();
+  State<BikePayment> createState() => _BikePaymentState();
 }
 
-class _CarPaymentState extends State<CarPayment> {
+class _BikePaymentState extends State<BikePayment> {
 
     int calculateAdvanceAmount() {
     int pricePerDay = int.parse(widget.price); // Convert the price to an integer
