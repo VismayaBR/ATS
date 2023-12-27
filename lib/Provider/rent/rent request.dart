@@ -102,6 +102,7 @@ class RequestCard extends StatelessWidget {
           onTap: () {
             Navigator.push(context, MaterialPageRoute(builder: (ctx) {
               return BikeReqView(
+                  id: document.id,
                   cus_id: req['cus_id'],
                   pick: req['pick'],
                   drop: req['drop'],

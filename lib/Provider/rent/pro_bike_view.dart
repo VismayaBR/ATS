@@ -1,29 +1,21 @@
 import 'package:ats/constants/font.dart';
-import 'package:ats/customer/cab/cabpayment.dart';
-import 'package:ats/customer/rent/carpayment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BikeViewPro extends StatefulWidget {
-  String id;
-  BikeViewPro({super.key, required this.id});
+  final String id;
+
+  BikeViewPro({required this.id});
 
   @override
   State<BikeViewPro> createState() => _BikeViewProState();
 }
 
 class _BikeViewProState extends State<BikeViewPro> {
-   late bool isAvailable; 
-  var _formKey = GlobalKey<FormState>();
-
-  var pick = TextEditingController();
-  var drop = TextEditingController();
-
+  late bool isAvailable;
   late Map<String, dynamic> bikeData = {};
-  late DateTime selectedDate = DateTime.now();
-  var selectedTime; // Initialize with a default value
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -31,7 +23,7 @@ class _BikeViewProState extends State<BikeViewPro> {
     fetchDataFromFirebase();
   }
 
- Future<void> updateAvailabilityStatus(bool newStatus) async {
+  Future<void> updateAvailabilityStatus(bool newStatus) async {
     try {
       await FirebaseFirestore.instance
           .collection('rent')
@@ -40,25 +32,24 @@ class _BikeViewProState extends State<BikeViewPro> {
       print('Status updated successfully');
     } catch (e) {
       print('Error updating status: $e');
-      // Handle errors as needed
     }
   }
 
-   Future<void> fetchDataFromFirebase() async {
+  Future<void> fetchDataFromFirebase() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('rent')
-              .doc(widget.id)
-              .get();
-
+          await FirebaseFirestore.instance.collection('rent').doc(widget.id).get();
 
       setState(() {
         bikeData = documentSnapshot.data() ?? {};
+        isAvailable = bikeData['status'] ?? false;
+        isLoading = false; // Set isLoading to false when data fetching is complete
       });
     } catch (e) {
       print('Error fetching data: $e');
-      // Handle errors as needed
+      setState(() {
+        isLoading = false; // Set isLoading to false even if there's an error
+      });
     }
   }
 
@@ -69,124 +60,76 @@ class _BikeViewProState extends State<BikeViewPro> {
         padding: const EdgeInsets.all(28.0),
         child: SingleChildScrollView(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 20,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'Bike for Rent',
+                  style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Bike for rent',style: GoogleFonts.poppins(fontSize: 18,fontWeight: FontWeight.bold),),
-                  ],
-                ),
-                SizedBox(height: 10,),
-                Container(
-                  height: 200,
-                  width: 400,
-                  color: Clr.clrlight,
-                  child: Image.network(bikeData['v_image']),
-                ),
-                SizedBox(height: 20,),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      bikeData['name'],
-                      style: GoogleFonts.poppins(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    Row(
+              ),
+              SizedBox(height: 10),
+              Container(
+                height: 200,
+                width: 400,
+                color: Clr.clrlight,
+                child: Image.network(bikeData['v_image']),
+              ),
+              SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    bikeData['name'],
+                    style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
                     children: [
-                      Text('Available:',
-                          style: GoogleFonts.poppins(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Available:',
+                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
                       Transform.scale(
-                        scale: 0.8, // Adjust the scaling factor as needed
+                        scale: 0.8,
                         child: Switch(
                           value: isAvailable,
-                          onChanged: (value) async {
-                            setState(() {
-                              isAvailable = value;
-                            });
-                            await updateAvailabilityStatus(value);
-                          },
-                          activeTrackColor: Colors
-                              .green, // Change the color of the track when switch is ON
-                          activeColor: Colors
-                              .white, // Change the color of the thumb when switch is ON
-                          inactiveThumbColor: const Color.fromARGB(255, 255, 255, 255), // Change the color of the thumb when switch is OFF
+                          onChanged: isLoading
+                              ? null // Disable switch when loading
+                              : (value) async {
+                                  setState(() {
+                                    isAvailable = value;
+                                  });
+                                  await updateAvailabilityStatus(value);
+                                },
+                          activeTrackColor: Colors.green,
+                          activeColor: Colors.white,
+                          inactiveThumbColor: const Color.fromARGB(255, 255, 255, 255),
                           inactiveTrackColor: Colors.grey,
                         ),
                       ),
                     ],
                   ),
-                    SizedBox(height: 20,),
-                    Text(
-                      'Description',
-                      style: GoogleFonts.poppins(
-                          fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      bikeData['desc'],
-                      style: GoogleFonts.poppins(fontSize: 15),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    
-                    SizedBox(
-                      height: 10,
-                    ),
-                   
-                   
-                    ],
-                ),
-                SizedBox(height: 40,),
-                
-                SizedBox(
-                  height: 10,
-                ),
-              ]),
+                  SizedBox(height: 20),
+                  Text(
+                    'Description',
+                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    bikeData['desc'],
+                    style: GoogleFonts.poppins(fontSize: 15),
+                  ),
+                  SizedBox(height: 20),
+                ],
+              ),
+              SizedBox(height: 40),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
   }
-
-//   Future<void> uploadDataToDatabase() async {
-//     try {
-//       if (_formKey.currentState!.validate()) {
-//         if (selectedDate != null && selectedTime != null) {
-//           // Convert DateTime to formatted date string
-//           String formattedDate =
-//               '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
-
-//           // Convert TimeOfDay to formatted time string
-//           String formattedTime =
-//               '${selectedTime!.hour}:${selectedTime!.minute}';
-// SharedPreferences spref = await SharedPreferences.getInstance();
-//     var id = spref.getString('user_id');
-//           await FirebaseFirestore.instance.collection('cab_booking').add({
-//             'date': formattedDate, // Store date as formatted string
-//             'time': formattedTime, // Store time as formatted string
-//             'pick': pick.text ?? '',
-//             'drop': drop.text ?? '',
-//             'cab_id': widget.id,
-//             'status':"0",
-//             'cus_id':id
-
-//           }).then((value) {
-//             Navigator.push(context, MaterialPageRoute(builder: (context) {
-//               return CabPayment(cab:cabData['name'],price:cabData['price'],img:cabData['v_image']);
-//             }));
-//           });
-//         } else {
-//           print('Selected date or time is null');
-//         }
-//       }
-//     } catch (e) {
-//       print('Error uploading data: $e');
-//     }
-//   }
 }

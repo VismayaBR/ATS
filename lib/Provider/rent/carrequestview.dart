@@ -9,12 +9,14 @@ class BikeReqView extends StatefulWidget {
   String pick;
   String drop;
   String car_id;
+  String id;
 
   BikeReqView({super.key, 
   required this.cus_id, 
   required this.pick, 
   required this.drop, 
-  required this.car_id
+  required this.car_id, 
+  required this.id
   });
 
   @override
@@ -25,7 +27,8 @@ class _BikeReqViewState extends State<BikeReqView> {
 
   late Map<String, dynamic> bikeData = {};
   late Map<String, dynamic> cusData = {};
-
+  late Map<String, dynamic> bookData = {};
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -42,6 +45,8 @@ class _BikeReqViewState extends State<BikeReqView> {
       setState(() {
         bikeData = documentSnapshot.data() ?? {};
       });
+       await fetchDataFromFirebase1();
+      await bookingData();
     } catch (e) {
       print('Error fetching data: $e');
       // Handle errors as needed
@@ -63,6 +68,142 @@ class _BikeReqViewState extends State<BikeReqView> {
   }
 }
 
+ Future<void> bookingData() async {
+    try {
+      print('.............${widget.id}............');
+      DocumentSnapshot<Map<String, dynamic>> bookingSnapshot =
+          await FirebaseFirestore.instance.collection('bike_booking').doc(widget.id).get();
+
+      setState(() {
+        bookData = bookingSnapshot.data() ?? {};
+        print('.............${bookData}............');
+      });
+    } catch (e) {
+      print('Error fetching booking data: $e');
+    }
+  }
+
+  Future<void> updateStatus(String status) async {
+    try {
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('bike_booking').doc(widget.id);
+
+      await documentReference.update({'status': status});
+
+      // Refresh UI by fetching data again
+      await fetchDataFromFirebase();
+
+      print('Status updated successfully!');
+    } catch (e) {
+      print('Error updating status: $e');
+    }
+  }
+
+  Future<void> updateStatus1(String status) async {
+    try {
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('bike_booking').doc(widget.id);
+
+      await documentReference.update({'status': status});
+
+      // Refresh UI by fetching data again
+      await fetchDataFromFirebase();
+
+      print('Status updated successfully!');
+    } catch (e) {
+      print('Error updating status: $e');
+    }
+  }
+
+ Widget buildStatusButtons() {
+    print('>>>>>>>>>>>>>>>>>>>>>>${bookData['status']}');
+//  if (isLoading) {
+//       return Center(
+//         child: CircularProgressIndicator(),
+//       );
+//     } else 
+if (bookData['status'] == '0') {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 38, right: 38, bottom: 20, top: 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  updateStatus('1'); // Accept
+                });
+              },
+              child: Container(
+                height: 50,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Accept', style: TextStyle(color: Colors.white, fontSize: 18)),
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Clr.clrdark,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 38, right: 38, bottom: 10),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  updateStatus('2'); // Reject
+                });
+              },
+              child: Container(
+                height: 45,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Reject', style: TextStyle(color: Color.fromARGB(255, 15, 1, 58), fontSize: 18)),
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Clr.clrdark),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Clr.clrlight,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (bookData['status'] == '1') {
+      return Padding(
+        padding: const EdgeInsets.only(left: 38, right: 38, bottom: 20, top: 10),
+        child: Container(
+          height: 50,
+          width: double.infinity,
+          child: Center(
+            child: Text('Accepted', style: TextStyle(color: Colors.white, fontSize: 18)),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Clr.clrdark,
+          ),
+        ),
+      );
+    } else if (bookData['status'] == '2') {
+      return Padding(
+        padding: const EdgeInsets.only(left: 38, right: 38, bottom: 20, top: 10),
+        child: Container(
+          height: 50,
+          width: double.infinity,
+          child: Center(
+            child: Text('Rejected', style: TextStyle(color: Colors.white, fontSize: 18)),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Clr.clrdark,
+          ),
+        ),
+      );
+    }
+
+    return Container(); // Default case, return an empty container
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -217,50 +358,7 @@ class _BikeReqViewState extends State<BikeReqView> {
                     SizedBox(height: 10,),
                    
                 SizedBox(height: 40,),
-                InkWell(
-                  // onTap: (){
-                  //   Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                  //     return CarPayment();
-                  //   }));
-                  // },
-                  child: Container(
-                    child: Center(
-                        child: Text(
-                      'Approve',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 18,
-                      ),
-                    )),
-                    decoration: BoxDecoration(
-                      // border: Border.all(),
-                      borderRadius: BorderRadius.circular(8),
-                      color: Clr.clrdark,
-                    ),
-                    height: 50,
-                    width: double.infinity,
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Container(
-                    child: Center(
-                        child: Text(
-                      'Reject',
-                      style: GoogleFonts.poppins(
-                        color: Clr.clrdark,
-                        fontSize: 18,
-                      ),
-                    )),
-                    decoration: BoxDecoration(
-                      border: Border.all(),
-                      borderRadius: BorderRadius.circular(8),
-                      color: Clr.clrlight,
-                    ),
-                    height: 50,
-                    width: double.infinity,
-                  ),
+               buildStatusButtons()
                   
                     
               ]),

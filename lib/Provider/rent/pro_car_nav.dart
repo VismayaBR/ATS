@@ -1,6 +1,7 @@
 import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/Provider/payment_history.dart';
+import 'package:ats/Provider/payment_tab.dart';
 import 'package:ats/Provider/rent/pro_carlist.dart';
 import 'package:ats/Provider/requests.dart';
 import 'package:ats/customer/accessory/accessory.dart';
@@ -97,7 +98,7 @@ class _ProCarNavState extends State<ProCarNav> with TickerProviderStateMixin {
          ProCarList(),
           Requests(),
           Mech(),
-         Payment_history(),
+         RentalVehicleTab(),
           ],
       ),
     );

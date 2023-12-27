@@ -5,44 +5,68 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Payment_history1 extends StatefulWidget {
-  const Payment_history1({super.key});
+class PaymentHistory1 extends StatefulWidget {
+  const PaymentHistory1({Key? key});
 
   @override
-  State<Payment_history1> createState() => _Payment_history1State();
+  State<PaymentHistory1> createState() => _PaymentHistory1State();
 }
 
-class _Payment_history1State extends State<Payment_history1> {
+class _PaymentHistory1State extends State<PaymentHistory1> {
+  late List<QueryDocumentSnapshot<Map<String, dynamic>>> reqData = [];
+  late Map<String, dynamic> customerData = {};
+  late Map<String, dynamic> bikeData = {};
 
-   @override
+  @override
   void initState() {
     super.initState();
     fetchDataFromFirebase();
   }
 
-  late List<DocumentSnapshot<Map<String, dynamic>>> reqData=[];
-
-
-  Future<dynamic> fetchDataFromFirebase() async {
+  Future<void> fetchDataFromFirebase() async {
     try {
-       SharedPreferences spref = await SharedPreferences.getInstance();
-        var id = spref.getString('user_id');
-        print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('bike_booking')
-          .where('pro_id',isEqualTo: id)
+      SharedPreferences spref = await SharedPreferences.getInstance();
+      var id = spref.getString('user_id');
+      print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
+          .instance
+          .collection('bike_booking')
+          .where('pro_id', isEqualTo: id)
           .get();
 
       setState(() {
         reqData = querySnapshot.docs;
-        
       });
-            return reqData;
-
-    } 
-    
-    catch (e) {
+    } catch (e) {
       print('Error fetching data: $e');
+      // Handle errors as needed
+    }
+  }
+
+  Future<void> fetchCustomerName(String cusId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await FirebaseFirestore.instance.collection('customers').doc(cusId).get();
+
+      setState(() {
+        customerData = documentSnapshot.data() ?? {};
+      });
+    } catch (e) {
+      print('Error fetching customer data: $e');
+      // Handle errors as needed
+    }
+  }
+
+  Future<void> fetchBikeName(String bikeId) async {
+    try {
+      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+          await FirebaseFirestore.instance.collection('rent').doc(bikeId).get();
+
+      setState(() {
+        bikeData = documentSnapshot.data() ?? {};
+      });
+    } catch (e) {
+      print('Error fetching bike data: $e');
       // Handle errors as needed
     }
   }
@@ -52,38 +76,43 @@ class _Payment_history1State extends State<Payment_history1> {
     return Scaffold(
       body: Column(
         children: [
-          Text('Payment History',style: GoogleFonts.poppins(fontSize: 20),),
+          Text('Payment History', style: GoogleFonts.poppins(fontSize: 20)),
           Expanded(
             child: ListView.builder(
-            itemCount: reqData.length,
-            itemBuilder: (context, index) {
-              var req = reqData[index].data();
-              return Card(
-                color: Clr.clrlight,
-                child: Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: ListTile(
-                  
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Text(req!['cus_id']),
-                        Text(req!['car_id']),
-                      ],
+              itemCount: reqData.length,
+              itemBuilder: (context, index) {
+                var req = reqData[index].data();
+                 var cusId = req?['cus_id'] ?? '';
+                var bikeId = req?['car_id'] ?? '';
+                 fetchCustomerName(cusId); // Fetch customer name based on cusId
+              
+                fetchBikeName(bikeId); // Fetch bike name based on bikeId
+
+                return Card(
+                  color: Clr.clrlight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: ListTile(
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Bike Name: ${bikeData['name'] ?? 'Unknown Bike'}'),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Customer Name: ${customerData['username'] ?? 'Unknown Customer'}'),
+                          Text('Advance amount is paid', style: TextStyle(color: Colors.green)),
+                          Text('Pickup Location: ${req?['pick'] ?? 'Unknown Pickup Location'}'),
+                          Text('Days For Rent: ${req?['days'] ?? 'Unknown'}'),
+                        ],
+                      ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Advance amount is payed',style: TextStyle(color: Colors.green),),
-                        Text(req['pick']),
-                         Text('${req['days']} Days For rent'),
-                      ],
-                    ),
-                    
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
           ),
         ],
       ),

@@ -49,8 +49,8 @@ class _RentalVehicleTabState extends State<RentalVehicleTab> {
         ),
         body: const TabBarView(
           children: [
-            Payment_history(),
-            Payment_history1(),
+            PaymentHistory(),
+            PaymentHistory1(),
           ],
         ),
       ),
