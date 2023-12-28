@@ -55,13 +55,15 @@ class _ProNavbarState extends State<ProNavbar> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        // title: IconButton(icon:Icon( CupertinoIcons.power), onPressed: () {  },),
         actions: [
            Padding(
              padding: const EdgeInsets.all(8.0),
              child: IconButton(icon: Icon(Icons.settings_power_sharp), onPressed: () { 
-              Navigator.push(context, MaterialPageRoute(builder: (ctx){
-                return HomeScreen();
-              }));
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
+            return HomeScreen();
+          }));
               },),
            ),
         ],

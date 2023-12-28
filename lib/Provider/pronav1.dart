@@ -1,3 +1,4 @@
+import 'package:ats/Login.dart';
 import 'package:ats/Provider/ProviderHome.dart';
 import 'package:ats/Provider/mechanicview.dart';
 import 'package:ats/Provider/payment_history.dart';
@@ -57,6 +58,12 @@ class _ProNavbar1State extends State<ProNavbar1> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: IconButton(icon:Icon( CupertinoIcons.power), onPressed: () { 
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
+            return HomeScreen();
+          }));
+         },iconSize: 20,),
        actions: [
        Padding(
          padding: const EdgeInsets.all(8.0),

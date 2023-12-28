@@ -1,4 +1,5 @@
 import 'package:ats/Admin/accessories.dart';
+import 'package:ats/Login.dart';
 import 'package:ats/customer/accessory/accessory.dart';
 import 'package:ats/customer/cab/available-cab.dart';
 import 'package:ats/customer/mechanics.dart';
@@ -10,7 +11,9 @@ import 'package:motion_tab_bar_v2/motion-tab-controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key,}) : super(key: key);
+  const MyHomePage({
+    Key? key,
+  }) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -24,9 +27,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     super.initState();
     // Use normal tab controller
     // _tabController = TabController(
-      initialIndex: 0;
-      length: 4;
-      vsync: this;
+    initialIndex:
+    0;
+    length:
+    4;
+    vsync:
+    this;
     // );
 
     //// use "MotionTabBarController" to replace with "TabController", if you need to programmatically change the tab
@@ -47,18 +53,28 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-       Padding(
-         padding: const EdgeInsets.all(8.0),
-         child: InkWell(
-          onTap: (){
-            launchUrl(Uri.parse('tel:0496123456'));
+        automaticallyImplyLeading: false,
+        title: IconButton(
+          icon: Icon(CupertinoIcons.power,size: 20),
+          onPressed: () {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (ctx) {
+              return HomeScreen();
+            }));
           },
-           child: SizedBox(
-             child: Image.asset('assets/cs.jpg')),
-         ),
-       ),
-       ],
+        ),
+//
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: InkWell(
+              onTap: () {
+                launchUrl(Uri.parse('tel:0496123456'));
+              },
+              child: SizedBox(child: Image.asset('assets/cs.jpg')),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: MotionTabBar(
         controller:
@@ -68,13 +84,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         labels: const ["Home", "Rental", "Accesssories", "Mechanics"],
         icons: const [
           Icons.car_rental_outlined,
-         CupertinoIcons.car_detailed,
-         CupertinoIcons.wrench,
-         CupertinoIcons.person_2_fill
+          CupertinoIcons.car_detailed,
+          CupertinoIcons.wrench,
+          CupertinoIcons.person_2_fill
         ],
 
         // optional badges, length must be same with labels
-        
+
         tabSize: 50,
         tabBarHeight: 55,
         textStyle: const TextStyle(
@@ -99,11 +115,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             const NeverScrollableScrollPhysics(), // swipe navigation handling is not supported
         controller: _motionTabBarController,
         children: [
-         AvailableCab(),
+          AvailableCab(),
           RentalVehicle(),
           Acc1(),
-         Mechanics(),
-          ],
+          Mechanics(),
+        ],
       ),
     );
   }

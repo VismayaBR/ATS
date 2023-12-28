@@ -1,3 +1,4 @@
+import 'package:ats/Provider/pronav1.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -88,13 +89,26 @@ Widget build(BuildContext context) {
                       : Text('Image not available'),
             ),
             SizedBox(height: 20),
+             
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  carData['name'] ?? '...',
-                  style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      carData['name'] ?? '...',
+                      style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    IconButton(icon:Icon(Icons.edit), onPressed: () { 
+                      _showEditDialog();
+                     },)
+                  ],
                 ),
+                Text(
+                      'Rs. ${carData['price']}',
+                      style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
                 SizedBox(height: 20),
                 Row(
                   children: [
@@ -102,6 +116,7 @@ Widget build(BuildContext context) {
                       'Available:',
                       style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
+                   
                     Transform.scale(
                       scale: 0.8,
                       child: Switch(
@@ -140,4 +155,100 @@ Widget build(BuildContext context) {
     ),
   );
 }
+ Future<void> _showEditDialog() async {
+  // Create controllers and set initial values
+  TextEditingController nameController = TextEditingController(text: carData['name']);
+  TextEditingController priceController = TextEditingController(text: carData['price']);
+  TextEditingController descriptionController = TextEditingController(text: carData['desc']);
+
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Edit Car Details'),
+        content: SizedBox(
+          height: 250,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(hintText: 'Enter new name'),
+                ),
+                TextField(
+                  controller: priceController,
+                  decoration: InputDecoration(hintText: 'Enter Price'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  maxLines: 5,
+                  decoration: InputDecoration(hintText: 'Enter description'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              // Implement logic to update the car details
+              // Access the entered text from controllers
+              // nameController.text, priceController.text, descriptionController.text;
+              Navigator.of(context).pop();
+            },
+            child:  TextButton(
+            onPressed: () async {
+              // Implement logic to update the car details
+              String newName = nameController.text;
+              String newPrice = priceController.text;
+              String newDescription = descriptionController.text;
+
+              // Update Firestore document
+              try {
+                await FirebaseFirestore.instance
+                    .collection('rent')
+                    .doc(widget.id)
+                    .update({
+                  'name': newName,
+                  'price': newPrice,
+                  'desc': newDescription,
+                });
+
+                // Provide feedback to the user (optional)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Car details updated successfully!'),
+                  ),
+                );
+
+                // Close the dialog
+               Navigator.pushReplacement(context, MaterialPageRoute(builder: (ctx){
+                  return ProNavbar1();
+                }));
+              } catch (e) {
+                print('Error updating car details: $e');
+
+                // Provide feedback to the user (optional)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Failed to update car details. Please try again.'),
+                  ),
+                );
+              }
+            },
+            child: Text('Save'),
+          ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 }

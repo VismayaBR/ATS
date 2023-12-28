@@ -54,9 +54,9 @@ class _MechanicsState extends State<Mechanics> {
               return Card(
                 color: Clr.clrlight,
                 child: Padding(
-                  padding: const EdgeInsets.all(18.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: ListTile(
-                    leading: CircleAvatar(backgroundColor: Colors.black,),
+                    // leading: CircleAvatar(backgroundColor: Colors.black,),
                     title: Text(mech!['name']),
                     subtitle: Text(mech['mobile']),
                     trailing: IconButton(onPressed: (){
