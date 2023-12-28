@@ -44,6 +44,7 @@ class _BikeReqViewState extends State<BikeReqView> {
 
       setState(() {
         bikeData = documentSnapshot.data() ?? {};
+         isLoading = false;
       });
        await fetchDataFromFirebase1();
       await bookingData();

@@ -16,6 +16,7 @@ class Requests extends StatefulWidget {
 
 class _RequestsState extends State<Requests> {
 
+
    @override
   void initState() {
     super.initState();
@@ -48,6 +49,8 @@ class _RequestsState extends State<Requests> {
       // Handle errors as needed
     }
   }
+
+  
   
   
   @override
@@ -74,7 +77,14 @@ class _RequestsState extends State<Requests> {
                     child: ListTile(
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return CabRequestView(cus_id:req['cus_id'],cab_id:req['cab_id'],date:req['date'],time:req['time'],drop:req['drop'],pick:req['pick']);
+                          return CabRequestView(
+                          id: reqData[index].id, 
+                          cus_id:req['cus_id'],
+                          cab_id:req['cab_id'],
+                          date:req['date'],
+                          time:req['time'],
+                          drop:req['drop'],
+                          pick:req['pick']);
                         }));
                       },
                       // leading: Container(height: 80,width: 80,color: Clr.clrdark,),

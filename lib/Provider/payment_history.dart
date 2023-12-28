@@ -28,11 +28,11 @@ class _PaymentHistoryState extends State<PaymentHistory> {
       SharedPreferences spref = await SharedPreferences.getInstance();
       var id = spref.getString('user_id');
       print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>$id');
-      QuerySnapshot<Map<String, dynamic>> querySnapshot = await FirebaseFirestore
-          .instance
-          .collection('car_booking')
-          .where('pro_id', isEqualTo: id)
-          .get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance
+              .collection('car_booking')
+              .where('pro_id', isEqualTo: id)
+              .get();
 
       setState(() {
         reqData = querySnapshot.docs;
@@ -46,7 +46,10 @@ class _PaymentHistoryState extends State<PaymentHistory> {
   Future<void> fetchCustomerName(String cusId) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance.collection('customers').doc(cusId).get();
+          await FirebaseFirestore.instance
+              .collection('customers')
+              .doc(cusId)
+              .get();
 
       setState(() {
         customerData = documentSnapshot.data() ?? {};
@@ -97,13 +100,20 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(customerData['username'] ?? 'Unknown Customer'),
-                          Text(carData['name'] ?? 'Unknown Car'),
+                          // Text(carData['name'] ?? 'Unknown Car'),
                         ],
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Advance amount is paid', style: TextStyle(color: Colors.green)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Advance amount is paid',
+                                  style: TextStyle(color: Colors.green)),
+                              Text('Rs. ${req['amount']}' ?? ''),
+                            ],
+                          ),
                           Text(req?['pick'] ?? 'Unknown Pickup Location'),
                           Text('${req?['days'] ?? 'Unknown'} Days For Rent'),
                         ],

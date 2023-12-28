@@ -5,6 +5,7 @@ import 'package:ats/Provider/pronav1.dart';
 import 'package:ats/choose.dart';
 import 'package:ats/constants/font.dart';
 import 'package:ats/customer/Cus_Navbar.dart';
+import 'package:ats/forgot%20password.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -171,11 +172,16 @@ Future<void> loginUser() async {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text('Forgot Password?'),
+                  TextButton(child: Text('Forgot Password?',style: TextStyle(color: Clr.clrdark),),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context){
+                      return ForgotPasswordScreen();
+                    }));
+                  },),
                 ],
               ),
               SizedBox(
-                height: 40,
+                height: 10,
               ),
               InkWell(
                 // <------------------ADMIN------------------->

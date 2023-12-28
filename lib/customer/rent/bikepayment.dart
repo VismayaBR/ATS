@@ -1,4 +1,6 @@
 import 'package:ats/constants/font.dart';
+import 'package:ats/customer/rent/pay.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -7,7 +9,8 @@ class BikePayment extends StatefulWidget {
   String price;
   String img;
   String days;
-  BikePayment({super.key, required this.cab, required this.price, required this.img, required this.days});
+  String id;
+  BikePayment({super.key, required this.cab, required this.price, required this.img, required this.days, required this.id});
 
   @override
   State<BikePayment> createState() => _BikePaymentState();
@@ -34,6 +37,25 @@ class _BikePaymentState extends State<BikePayment> {
     var ttl = advanceAmount/2;
     return ttl;
   }
+   Future<void> updateAmountInFirestore() async {
+    try {
+      // Calculate the advance amount
+      int advanceAmount = calculateAdvanceAmount();
+
+      // Update the 'amount' field in the 'car_booking' collection
+      await FirebaseFirestore.instance
+          .collection('bike_booking')
+          .doc(widget.id)
+          .update({'amount': (advanceAmount/2).toString()});
+          Navigator.push(context, MaterialPageRoute(builder: (ctx){
+            return Pay();
+          }));
+    } catch (e) {
+      print('Error updating amount: $e');
+      // Handle errors as needed
+    }
+  }
+
 
 
   @override
@@ -155,19 +177,11 @@ class _BikePaymentState extends State<BikePayment> {
             ),
            SizedBox(),
             InkWell(
-              // <------------------ADMIN------------------->
-              // onTap: (){
-              //   Navigator.push(context, MaterialPageRoute(builder:  (context){
-              //     return MyNavigationBar();
-              //   }));
-              // <------------------------------------------->
+             
+              onTap: () async {
+               await updateAmountInFirestore();
             
-              //  onTap: (){
-              //   Navigator.push(context, MaterialPageRoute(builder:  (context){
-              //     return MyHomePage();
-              //   }));
-            
-              // },
+              },
               child: Container(
                 child: Center(
                     child: Text(

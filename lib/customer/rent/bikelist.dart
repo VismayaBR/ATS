@@ -84,7 +84,9 @@ class _BikeListState extends State<BikeList> {
                                        onTap: () {
                                         Navigator.push(context,
                                             MaterialPageRoute(builder: (ctx) {
-                                          return BikeView(id: bikeData[index].id,);
+                                          return BikeView(
+                                            
+                                            id: bikeData[index].id,);
                                         }));
                                        },
                                       child: Container(

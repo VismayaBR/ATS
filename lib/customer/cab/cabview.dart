@@ -6,22 +6,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CabView extends StatefulWidget {
-  String id;
-  CabView({super.key, required this.id});
+  final String id;
+
+  CabView({Key? key, required this.id}) : super(key: key);
 
   @override
   State<CabView> createState() => _CabViewState();
 }
 
 class _CabViewState extends State<CabView> {
-  var _formKey = GlobalKey<FormState>();
-
-  var pick = TextEditingController();
-  var drop = TextEditingController();
-
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController pick = TextEditingController();
+  final TextEditingController drop = TextEditingController();
   late Map<String, dynamic> cabData = {};
   late DateTime selectedDate = DateTime.now();
-  var selectedTime; // Initialize with a default value
+  TimeOfDay? selectedTime; // Initialize with a default value
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -31,18 +31,23 @@ class _CabViewState extends State<CabView> {
 
   Future<void> fetchDataFromFirebase() async {
     try {
+      setState(() {
+        isLoading = true; // Set loading to true when starting to fetch data
+      });
+
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('cabs')
-              .doc(widget.id)
-              .get();
+          await FirebaseFirestore.instance.collection('cabs').doc(widget.id).get();
 
       setState(() {
         cabData = documentSnapshot.data() ?? {};
+        isLoading = false; // Set loading to false after data is fetched
       });
     } catch (e) {
       print('Error fetching data: $e');
       // Handle errors as needed
+      setState(() {
+        isLoading = false; // Set loading to false in case of an error
+      });
     }
   }
 
@@ -55,47 +60,44 @@ class _CabViewState extends State<CabView> {
           child: Form(
             key: _formKey,
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Cab Booking',
+                      style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                if (isLoading) // Display circular progress indicator during initial loading
+                  Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Cab Booking',
-                        style: GoogleFonts.poppins(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+                if (!isLoading && cabData.isNotEmpty)
                   Container(
                     height: 200,
                     width: 400,
                     color: Clr.clrlight,
-                    child: Image.network(
-                        cabData['v_image']),
+                    child: Image.network(cabData['v_image']),
                   ),
+                if (!isLoading && cabData.isNotEmpty)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         cabData['name'],
-                        style: GoogleFonts.poppins(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'Rs. ${cabData['price']}',
-                        style: GoogleFonts.poppins(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      // Text(
-                      //   'Description',
-                      //   style: GoogleFonts.poppins(
-                      //       fontSize: 16, fontWeight: FontWeight.bold),
-                      // ),
                       Text(
                         cabData['desc'],
                         style: GoogleFonts.poppins(fontSize: 15),
@@ -121,8 +123,6 @@ class _CabViewState extends State<CabView> {
                       SizedBox(
                         height: 10,
                       ),
-                      // ... existing code ...
-
                       Row(
                         children: [
                           Expanded(
@@ -135,8 +135,7 @@ class _CabViewState extends State<CabView> {
                                   lastDate: DateTime(DateTime.now().year + 1),
                                 );
 
-                                if (pickedDate != null &&
-                                    pickedDate != selectedDate) {
+                                if (pickedDate != null && pickedDate != selectedDate) {
                                   setState(() {
                                     selectedDate = pickedDate;
                                   });
@@ -148,11 +147,9 @@ class _CabViewState extends State<CabView> {
                                   labelText: 'Date',
                                   filled: true,
                                   fillColor: Clr.clrlight,
-                                  // border: OutlineInputBorder(),
                                 ),
                                 controller: TextEditingController(
-                                  text:
-                                      '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
+                                  text: '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                                 ),
                               ),
                             ),
@@ -168,8 +165,7 @@ class _CabViewState extends State<CabView> {
 
                                 if (pickedTime != null) {
                                   setState(() {
-                                    selectedTime =
-                                        pickedTime; // Update selectedTime
+                                    selectedTime = pickedTime;
                                   });
                                 }
                               },
@@ -179,19 +175,15 @@ class _CabViewState extends State<CabView> {
                                   labelText: 'Time',
                                   filled: true,
                                   fillColor: Clr.clrlight,
-                                  // border: OutlineInputBorder(),
                                 ),
                                 controller: TextEditingController(
-                                  text: selectedTime != null
-                                      ? '${selectedTime.format(context)},'
-                                      : '',
+                                  text: selectedTime != null ? '${selectedTime!.format(context)}' : '',
                                 ),
                               ),
                             ),
                           ),
                         ],
                       ),
-
                       SizedBox(
                         height: 20,
                       ),
@@ -202,7 +194,6 @@ class _CabViewState extends State<CabView> {
                       TextFormField(
                         controller: pick,
                         decoration: InputDecoration(
-                          // hintText: 'Email',
                           filled: true,
                           fillColor: Clr.clrlight,
                           border: InputBorder.none,
@@ -218,7 +209,6 @@ class _CabViewState extends State<CabView> {
                       TextFormField(
                         controller: drop,
                         decoration: InputDecoration(
-                          // hintText: 'Email',
                           filled: true,
                           fillColor: Clr.clrlight,
                           border: InputBorder.none,
@@ -226,23 +216,22 @@ class _CabViewState extends State<CabView> {
                       ),
                     ],
                   ),
+                if (!isLoading && cabData.isNotEmpty)
                   InkWell(
                     onTap: () {
                       print('object');
                       uploadDataToDatabase();
-                      // Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                      //   return CabPayment();
-                      // }));
                     },
                     child: Container(
                       child: Center(
-                          child: Text(
-                        'Book',
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 18,
+                        child: Text(
+                          'Book',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
                         ),
-                      )),
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         color: Clr.clrdark,
@@ -251,10 +240,11 @@ class _CabViewState extends State<CabView> {
                       width: double.infinity,
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ]),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -265,29 +255,32 @@ class _CabViewState extends State<CabView> {
     try {
       if (_formKey.currentState!.validate()) {
         if (selectedDate != null && selectedTime != null) {
-          // Convert DateTime to formatted date string
-          String formattedDate =
-              '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+          String formattedDate = '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
+          String formattedTime = '${selectedTime!.hour}:${selectedTime!.minute}';
+          SharedPreferences spref = await SharedPreferences.getInstance();
+          var id = spref.getString('user_id');
 
-          // Convert TimeOfDay to formatted time string
-          String formattedTime =
-              '${selectedTime!.hour}:${selectedTime!.minute}';
-SharedPreferences spref = await SharedPreferences.getInstance();
-    var id = spref.getString('user_id');
+          // Check for potential null values in cabData
+          var proId = cabData['pro_id'] ?? '';
+          var price = cabData['price'] ?? '';
+
           await FirebaseFirestore.instance.collection('cab_booking').add({
-            'date': formattedDate, // Store date as formatted string
-            'time': formattedTime, // Store time as formatted string
+            'date': formattedDate,
+            'time': formattedTime,
             'pick': pick.text ?? '',
             'drop': drop.text ?? '',
             'cab_id': widget.id,
-            'status':"0",
-            'cus_id':id,
-            'pro_id':cabData['pro_id'],
-            'pay':cabData['price'],
-
+            'status': "0",
+            'cus_id': id,
+            'pro_id': proId,
+            'pay': price,
           }).then((value) {
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CabPayment(cab:cabData['name'],price:cabData['price'],img:cabData['v_image'],);
+              return CabPayment(
+                cab: cabData['name'] ?? '',
+                price: price,
+                img: cabData['v_image'] ?? '',
+              );
             }));
           });
         } else {

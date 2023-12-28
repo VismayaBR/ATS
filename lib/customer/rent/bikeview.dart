@@ -1,7 +1,6 @@
 import 'package:ats/constants/font.dart';
 import 'package:ats/customer/cab/cabpayment.dart';
 import 'package:ats/customer/rent/bikepayment.dart';
-import 'package:ats/customer/rent/carpayment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,7 +24,7 @@ class _BikeViewState extends State<BikeView> {
   late Map<String, dynamic> bikeData = {};
   late DateTime selectedDate = DateTime.now();
   late DateTime selectedDate1 = DateTime.now();
-
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -33,62 +32,65 @@ class _BikeViewState extends State<BikeView> {
     fetchDataFromFirebase();
   }
 
-late Map<String, dynamic> bikesData = {};
+  Future<void> uploadDataToDatabase() async {
+    try {
+      if (_formKey.currentState!.validate()) {
+        if (selectedDate != null && selectedDate1 != null) {
+          String formattedDate =
+              '${selectedDate.day}-${selectedDate.month}-${selectedDate.year}';
+          String formattedDate1 =
+              '${selectedDate1.day}-${selectedDate1.month}-${selectedDate1.year}';
 
-    Future<void> uploadDataToDatabase() async {
-  try {
-    if (_formKey.currentState!.validate()) {
-      if (selectedDate != null && selectedDate1 != null) {
-        // Convert DateTime to formatted date string (day, month, year only)
-        String formattedDate = '${selectedDate.day}-${selectedDate.month}-${selectedDate.year}';
-        String formattedDate1 = '${selectedDate1.day}-${selectedDate1.month}-${selectedDate1.year}';
+          SharedPreferences spref = await SharedPreferences.getInstance();
+          var id = spref.getString('user_id');
 
-        SharedPreferences spref = await SharedPreferences.getInstance();
-        var id = spref.getString('user_id');
+          final bookingRef =
+              FirebaseFirestore.instance.collection('bike_booking');
 
-        await FirebaseFirestore.instance.collection('bike_booking').add({
-          'pick': formattedDate,
-          'drop': formattedDate1,
-          'car_id': widget.id,
-          'status': "0",
-          'cus_id': id,
-          'pro_id': bikeData['pro_id'],
-          'days':days.text
-        }).then((value) {
+          final DocumentReference bookingDoc = await bookingRef.add({
+            'pick': formattedDate,
+            'drop': formattedDate1,
+            'car_id': widget.id,
+            'status': "0",
+            'cus_id': id,
+            'pro_id': bikeData['pro_id'],
+            'days': days.text,
+            'amount': '0'
+          });
+
+          final bookingId = bookingDoc.id;
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return BikePayment(
               cab: bikeData['name'],
               price: bikeData['price'],
               img: bikeData['v_image'],
-              days:days.text
+              days: days.text,
+              id: bookingId,
             );
           }));
-        });
-      } else {
-        print('Selected date or time is null');
+        } else {
+          print('Selected date or time is null');
+        }
       }
+    } catch (e) {
+      print('Error uploading data: $e');
     }
-  } catch (e) {
-    print('Error uploading data: $e');
-    // Add user-friendly error handling or log errors for debugging
   }
-}
 
-   Future<void> fetchDataFromFirebase() async {
+  Future<void> fetchDataFromFirebase() async {
     try {
       DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('rent')
-              .doc(widget.id)
-              .get();
-
+          await FirebaseFirestore.instance.collection('rent').doc(widget.id).get();
 
       setState(() {
         bikeData = documentSnapshot.data() ?? {};
+        isLoading = false;
       });
     } catch (e) {
       print('Error fetching data: $e');
-      // Handle errors as needed
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -101,26 +103,34 @@ late Map<String, dynamic> bikesData = {};
           child: Form(
             key: _formKey,
             child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Bike for rent',
+                      style: GoogleFonts.poppins(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                if (isLoading)
+                  Center(
+                    child: CircularProgressIndicator(),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Bike for rent',style: GoogleFonts.poppins(fontSize: 18,fontWeight: FontWeight.bold),),
-                    ],
-                  ),
-                  SizedBox(height: 10,),
+                if (!isLoading)
                   Container(
                     height: 200,
                     width: 400,
                     color: Clr.clrlight,
                     child: Image.network(bikeData['v_image']),
                   ),
-                  SizedBox(height: 20,),
+                SizedBox(height: 20),
+                if (!isLoading)
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -134,7 +144,7 @@ late Map<String, dynamic> bikesData = {};
                         style: GoogleFonts.poppins(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(height: 20),
                       Text(
                         'Description',
                         style: GoogleFonts.poppins(
@@ -168,80 +178,73 @@ late Map<String, dynamic> bikesData = {};
                       Row(
                         children: [
                           Expanded(
-                              child: InkWell(
-                                onTap: () async {
-                                  final pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: selectedDate,
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(DateTime.now().year + 100),
-                                  );
-              
-                                  if (pickedDate != null &&
-                                      pickedDate != selectedDate) {
-                                    setState(() {
-                                      selectedDate = pickedDate;
-                                    });
-                                  }
-                                },
-                                child: TextFormField(
-                                  enabled: false,
-                                  decoration: InputDecoration(
-                                    labelText: 'Date',
-                                    filled: true,
-                                    fillColor: Clr.clrlight,
-                                    // border: OutlineInputBorder(),
-                                  ),
-                                  controller: TextEditingController(
-                                    text:
-                                        '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-                                  ),
+                            child: InkWell(
+                              onTap: () async {
+                                final pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate,
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(DateTime.now().year + 100),
+                                );
+
+                                if (pickedDate != null &&
+                                    pickedDate != selectedDate) {
+                                  setState(() {
+                                    selectedDate = pickedDate;
+                                  });
+                                }
+                              },
+                              child: TextFormField(
+                                enabled: false,
+                                decoration: InputDecoration(
+                                  labelText: 'Date',
+                                  filled: true,
+                                  fillColor: Clr.clrlight,
+                                ),
+                                controller: TextEditingController(
+                                  text:
+                                      '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Expanded(
-                              child: InkWell(
-                                onTap: () async {
-                                  final pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: selectedDate1,
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(DateTime.now().year + 100),
-                                  );
-              
-                                  if (pickedDate != null &&
-                                      pickedDate != selectedDate) {
-                                    setState(() {
-                                      selectedDate1 = pickedDate;
-                                    });
-                                  }
-                                },
-                                child: TextFormField(
-                                  enabled: false,
-                                  decoration: InputDecoration(
-                                    labelText: 'Date1',
-                                    filled: true,
-                                    fillColor: Clr.clrlight,
-                                    // border: OutlineInputBorder(),
-                                  ),
-                                  controller: TextEditingController(
-                                    text:
-                                        '${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}',
-                                  ),
+                          ),
+                          SizedBox(width: 15),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () async {
+                                final pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: selectedDate1,
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(DateTime.now().year + 100),
+                                );
+
+                                if (pickedDate != null &&
+                                    pickedDate != selectedDate) {
+                                  setState(() {
+                                    selectedDate1 = pickedDate;
+                                  });
+                                }
+                              },
+                              child: TextFormField(
+                                enabled: false,
+                                decoration: InputDecoration(
+                                  labelText: 'Date1',
+                                  filled: true,
+                                  fillColor: Clr.clrlight,
+                                ),
+                                controller: TextEditingController(
+                                  text:
+                                      '${selectedDate1.day}/${selectedDate1.month}/${selectedDate1.year}',
                                 ),
                               ),
                             ),
+                          ),
                         ],
                       ),
                       SizedBox(
                         height: 20,
                       ),
-                      
-                     
-                     
                       Text('Number of days'),
                       SizedBox(
                         height: 10,
@@ -249,7 +252,6 @@ late Map<String, dynamic> bikesData = {};
                       TextFormField(
                         controller: days,
                         decoration: InputDecoration(
-                          // hintText: 'Email',
                           filled: true,
                           fillColor: Clr.clrlight,
                           border: InputBorder.none,
@@ -257,10 +259,11 @@ late Map<String, dynamic> bikesData = {};
                       ),
                     ],
                   ),
-                  SizedBox(height: 40,),
+                SizedBox(height: 40),
+                if (!isLoading)
                   InkWell(
-                    onTap: (){
-                     uploadDataToDatabase();
+                    onTap: () {
+                      uploadDataToDatabase();
                     },
                     child: Container(
                       child: Center(
@@ -279,49 +282,14 @@ late Map<String, dynamic> bikesData = {};
                       width: double.infinity,
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ]),
+                SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-
-//   Future<void> uploadDataToDatabase() async {
-//     try {
-//       if (_formKey.currentState!.validate()) {
-//         if (selectedDate != null && selectedTime != null) {
-//           // Convert DateTime to formatted date string
-//           String formattedDate =
-//               '${selectedDate.year}-${selectedDate.month}-${selectedDate.day}';
-
-//           // Convert TimeOfDay to formatted time string
-//           String formattedTime =
-//               '${selectedTime!.hour}:${selectedTime!.minute}';
-// SharedPreferences spref = await SharedPreferences.getInstance();
-//     var id = spref.getString('user_id');
-//           await FirebaseFirestore.instance.collection('cab_booking').add({
-//             'date': formattedDate, // Store date as formatted string
-//             'time': formattedTime, // Store time as formatted string
-//             'pick': pick.text ?? '',
-//             'drop': drop.text ?? '',
-//             'cab_id': widget.id,
-//             'status':"0",
-//             'cus_id':id
-
-//           }).then((value) {
-//             Navigator.push(context, MaterialPageRoute(builder: (context) {
-//               return CabPayment(cab:cabData['name'],price:cabData['price'],img:cabData['v_image']);
-//             }));
-//           });
-//         } else {
-//           print('Selected date or time is null');
-//         }
-//       }
-//     } catch (e) {
-//       print('Error uploading data: $e');
-//     }
-//   }
 }

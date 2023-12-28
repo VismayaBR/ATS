@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:ats/Login.dart';
 import 'package:ats/constants/font.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -60,6 +61,10 @@ class _SignUpState extends State<SignUp> {
   var name = TextEditingController();
   var password = TextEditingController();
 
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('customers');
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,115 +79,111 @@ class _SignUpState extends State<SignUp> {
                 SizedBox(
                   height: 100,
                 ),
-               
-               
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    'Sign Up',
-                    style: GoogleFonts.poppins(fontSize: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Sign Up',
+                      style: GoogleFonts.poppins(fontSize: 40),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text("Let's setup your account",
+                        style: GoogleFonts.poppins(fontSize: 15)),
+                  ],
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Email';
+                    }
+                    RegExp emailRegExp =
+                        RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
+                    if (!emailRegExp.hasMatch(value)) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                  controller: email,
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    filled: true,
+                    fillColor: Clr.clrlight,
+                    border: InputBorder.none,
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text("Let's setup your account",
-                      style: GoogleFonts.poppins(fontSize: 15)),
-                ],
-              ),
-              SizedBox(
-                height: 50,
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Email';
-                  }
-                  RegExp emailRegExp =
-                      RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$');
-                  if (!emailRegExp.hasMatch(value)) {
-                    return 'Please enter a valid email address';
-                  }
-                  return null;
-                },
-                controller: email,
-                decoration: InputDecoration(
-                  hintText: 'Email',
-                  filled: true,
-                  fillColor: Clr.clrlight,
-                  border: InputBorder.none,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Mobile no';
-                  }
-                  RegExp mobileRegExp = RegExp(r'^\d{10}$');
-                  if (!mobileRegExp.hasMatch(value)) {
-                    return 'Please enter a valid mobile number';
-                  }
-                  return null;
-                },
-                controller: mobile,
-                decoration: InputDecoration(
-                  hintText: 'Mobile',
-                  filled: true,
-                  fillColor: Clr.clrlight,
-                  border: InputBorder.none,
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Username';
-                  }
-                  return null;
-                },
-                controller: name,
-                decoration: InputDecoration(
-                  hintText: 'Username',
-                  filled: true,
-                  fillColor: Clr.clrlight,
-                  border: InputBorder.none,
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Mobile no';
+                    }
+                    RegExp mobileRegExp = RegExp(r'^\d{10}$');
+                    if (!mobileRegExp.hasMatch(value)) {
+                      return 'Please enter a valid mobile number';
+                    }
+                    return null;
+                  },
+                  controller: mobile,
+                  decoration: InputDecoration(
+                    hintText: 'Mobile',
+                    filled: true,
+                    fillColor: Clr.clrlight,
+                    border: InputBorder.none,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your Password';
-                  }
-                  RegExp passwordRegExp =
-                      RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$');
-                  if (!passwordRegExp.hasMatch(value)) {
-                    return 'Must be at least 6 and both letters and numbers.';
-                  }
-                  return null;
-                },
-                
-                controller: password,
-                decoration: InputDecoration(
-                  
-                  hintText: 'Password',
-                  filled: true,
-                  fillColor: Clr.clrlight,
-                  border: InputBorder.none,
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Username';
+                    }
+                    return null;
+                  },
+                  controller: name,
+                  decoration: InputDecoration(
+                    hintText: 'Username',
+                    filled: true,
+                    fillColor: Clr.clrlight,
+                    border: InputBorder.none,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your Password';
+                    }
+                    RegExp passwordRegExp = RegExp(
+                        r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$');
+                    if (!passwordRegExp.hasMatch(value)) {
+                      return 'Must be at least 6 and both letters and numbers.';
+                    }
+                    return null;
+                  },
+                  controller: password,
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    filled: true,
+                    fillColor: Clr.clrlight,
+                    border: InputBorder.none,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 InkWell(
                   onTap: () async {
                     await pickImage();
@@ -250,6 +251,12 @@ class _SignUpState extends State<SignUp> {
   Future<void> uploadDataToDatabase() async {
     try {
       if (_formKey.currentState!.validate()) {
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
+          email: email.text,
+          password: password.text,
+        );
+
         await uploadImage();
         
         await FirebaseFirestore.instance.collection('customers').add({
@@ -259,8 +266,7 @@ class _SignUpState extends State<SignUp> {
           'password': password.text,
           'type': 'customer',
           'proof': imageUrl,
-          'status':'0'
-
+          'status': '0'
         }).then((value) {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return HomeScreen();

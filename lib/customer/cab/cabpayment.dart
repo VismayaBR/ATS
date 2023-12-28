@@ -1,4 +1,5 @@
 import 'package:ats/constants/font.dart';
+import 'package:ats/customer/rent/pay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -111,7 +112,11 @@ class _CabPaymentState extends State<CabPayment> {
             SizedBox(),
             InkWell(
              
-            
+            onTap: (){
+               Navigator.push(context, MaterialPageRoute(builder: (ctx){
+            return Pay();
+          }));
+            },
               child: Container(
                 child: Center(
                     child: Text(
